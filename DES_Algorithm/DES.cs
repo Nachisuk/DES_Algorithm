@@ -74,8 +74,8 @@ namespace DES_Algorithm
 
         public DES(int[] array, int[] key)
         {
-            inputArray = array;
-            keyArray = key;
+            Array.Copy(array, inputArray, array.Length);
+            Array.Copy(key, keyArray, key.Length);
 
             initialpermutation = new int[64];
             LEFT = RIGHT = new int[17, 32];
@@ -288,7 +288,8 @@ namespace DES_Algorithm
         {
             //ostatni krok algorytmu czyli znowu przetasowujemy nasz tekst na wzór InitialPermutation()
             int[] inversePermutation = new int[] { 40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55, 23, 63, 31, 38, 6, 46, 14, 54, 22, 62, 30, 37, 5, 45, 13, 53, 21, 61, 29, 36, 4, 44, 12, 52, 20, 60, 28, 35, 3, 43, 11, 51, 19, 59, 27, 34, 2, 42, 10, 50, 18, 58, 26, 33, 1, 41, 9, 49, 17, 57, 25 };
-            int[] copy = inputArray;
+            int[] copy = new int[64];
+            Array.Copy(inputArray, copy, inputArray.Length);
             for (int i = 0; i < 64; i++)
             {
                 inputArray[i] = copy[inversePermutation[i]-1];
@@ -384,9 +385,9 @@ namespace DES_Algorithm
             {
                 SUBKEYS[x, i] = CD[permutedChoice2[i]-1];
 
-                //Console.Write(CD[permutedChoice2[i] - 1]);
+               // Console.Write(CD[permutedChoice2[i] - 1]);
             }
-            //Console.WriteLine();
+           // Console.WriteLine();
         }
 
         public void DES_PrepareDecipher()

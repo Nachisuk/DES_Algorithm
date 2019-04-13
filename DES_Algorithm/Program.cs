@@ -8,7 +8,7 @@ namespace DES_Algorithm
         {
             Console.WriteLine("Hello World!");
             string text = "1101001100110100010101110111100110011011101111001101111111111111";
-            string key = "1001001100111100010101110111100110011011101111011101111111110001";
+            string key = "1001101100111100010101110111100110011011101111011101111111110001";
 
             Console.WriteLine(text);
             Console.WriteLine(key);
@@ -33,13 +33,13 @@ namespace DES_Algorithm
             }
             Console.WriteLine();
 
-           // DES algotytm2 = new DES(text1, key1);
-           // algotytm2.DES_PrepareDecipher();
-           //text1 = algotytm2.inputArray;
-           // for (int i = 0; i < 64; i++)
-          //  {
-               // Console.Write(text1[i]);
-          //  }
+           DES algotytm2 = new DES(text1, key1);
+            algotytm2.DES_PrepareDecipher();
+           text1 = algotytm2.inputArray;
+            for (int i = 0; i < 64; i++)
+            {
+                Console.Write(text1[i]);
+            }
             Console.ReadKey();
         }
     }
