@@ -80,7 +80,7 @@ namespace DES_Algorithm
             initialpermutation = new int[64];
             LEFT = RIGHT = new int[17, 32];
             KEY56 = new int[56];
-            SUBKEYS = new int[16,48];
+            SUBKEYS = new int[17,48];
             XorToSBox = new int[8, 6];
             round = 0;
             rightExpansion = new int[48];
@@ -201,7 +201,8 @@ namespace DES_Algorithm
         private void permutationBox()
         {
             int[] permutation = new int[] { 16,  7, 20, 21, 29, 12, 28, 17,1, 15, 23, 26,5, 18, 31, 10,2,  8, 24, 14,32, 27,  3,  9,19, 13, 30,  6,22, 11,  4, 25};
-            int[] copy = PostSbox;
+            int[] copy = new int[32];
+            Array.Copy(PostSbox, copy, PostSbox.Length);
             for(int i=0;i<32;i++)
             {
                 PostSbox[i] = copy[permutation[i]-1];
@@ -298,9 +299,11 @@ namespace DES_Algorithm
         {
             //tablica zmiany naszego klucza z 64 bit do 56 bit
             int[] permutedChoice1 = new int[] { 57, 49, 41, 33, 25, 17, 9, 1, 58, 50, 42, 34, 26, 18, 10, 2, 59, 51, 43, 35, 27, 19, 11, 3, 60, 52, 44, 36, 63, 55, 47, 39, 31, 23, 15, 7, 62, 54, 46, 38, 30, 22, 14, 6, 61, 53, 45, 37, 29, 21, 13, 5, 28, 20, 12, 4 };
+            //Console.WriteLine("Key pre1");
             for (int i = 0; i < 56; i++)
             {
                 KEY56[i] = keyArray[permutedChoice1[i]-1];
+               // Console.Write(keyArray[permutedChoice1[i] - 1]);
             }
             //zwrócić ten 56 bitowy klucz
         }
@@ -333,8 +336,10 @@ namespace DES_Algorithm
                 //wartość o którą przesuwamy
                 int shift = roundShift[i];
                 //zapamiętujemy częśći klucza
-                int[] backup_C = C;
-                int[] backup_D = D;
+                int[] backup_C = new int[32];
+                int[] backup_D = new int[32];
+                Array.Copy(C, backup_C, C.Length);
+                Array.Copy(D, backup_D, D.Length);
 
                 //przesuwamy części klucza o wartość
                 for(int j=0;j<28;j++)
@@ -343,7 +348,9 @@ namespace DES_Algorithm
                     if (shiftValue < 0) shiftValue = shiftValue + 28;
 
                     C[j] = backup_C[shiftValue];
+                   // Console.WriteLine("LeftShift C" + C[j]);
                     D[j] = backup_D[shiftValue];
+                  //  Console.WriteLine("LeftShift D" + D[j]);
                 }
                 //tworzymy zmienną do zapamiętania nowego klucza
                 int[] CD = new int[56];
@@ -372,10 +379,14 @@ namespace DES_Algorithm
             //więc funkcja jak na razie nie będzie działać ale taki jest plan - stare komentarze
 
             //tworzymy subkey dla konkretnej rundy od konkrentnych CD keyów z funkcji LEFT SHIFT
+            //Console.WriteLine("Key" + x);
             for (int i = 0; i < 48; i++)
             {
                 SUBKEYS[x, i] = CD[permutedChoice2[i]-1];
+
+                //Console.Write(CD[permutedChoice2[i] - 1]);
             }
+            //Console.WriteLine();
         }
 
         public void DES_PrepareDecipher()
