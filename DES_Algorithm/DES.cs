@@ -28,6 +28,38 @@ namespace DES_Algorithm
          * 6. Dostajemy wyniki 48-bitowy prawej części
          * 7. Wkładamy nasz 48-bitowy wynik do Substitution boxów, które dają nam 32 bitowy wynik (jeszcze tego nie roszyfrowałem do końca
          * ale mamy 8 S-boxów, do każdego z nich wkładamy po 6 bitów (6*8=48), a każdy z tych S-boxów wypluwa nam 4 bity (z wcześniejszych 6) co daje nam 32 bity na wyjście)
+         * 
+         * Przerwa na opis S-Boxów:
+         * S-box jest tabelką, ma 4 wiersze i 16 kolumn
+         * 
+         * S-box przyjmuje 6 bitów załóżmy 100110
+         * 
+         * na podstawie tych 6 bitów wybieramy wiersz i kolumne z której będziemy wybierać bity na wyjście
+         * 
+         * numer wiersza z którego odczytujemy wartości na wyjście, otrzymujemy poprzez odczytanie wartości PIERWSZEGO I OSTATNIEGO bitu (czyli wiersz zapisujemy za pomocą dwóch bitów, maksymalnie 4 co zgadza się z wielkością sboxa)
+         * numer kolumny odczytujemy z pozostałych czterech bitów ( co maksymalnie daje na 16 kolumn)
+         * 
+         * W naszym przykładzie  Kolumna: bity(10) co daje nam 2
+         * Wiersze: bity(0011) co daje nam 3
+         * 
+         * Teraz patrzymy jaką wartość mamy w danym S-boxie dla kolumny 2, wiersza 3
+         * Dla S1-box jest to 8
+         * 
+         * Na wyjście dajemy zapis binarny odpowiadający dla liczby stojącej na danym miejscu  w S-boxie w naszym przypadku 8(10) = 1000(2)
+         * 
+         * Czyli na wyjście wychodzą 4-bity - 1000
+         * Robimy to dla 8 sboxów
+         * 
+         * 8. Po otrzymaniu wyników z wszystkich Sboxów ponownie mamy 32 bity 
+         * 9. Wykonujemy kolejną permutacje na naszych otrzymanch 32 bitach (W pdf permutacja P, strona 18)
+         * 10. XORujemy naszą prawą stronę (po tych wszystkich krokach, z lewą stroną)
+         * 11. Wynik naszego XORowania zostaje naszą nową prawą stroną, natomiast oryginalna prawa strona zostaje lewą stroną
+         * 12. Przechodzimy do następnej rundy (nie powtarzamy już initial premuttation bo to initial, czekamy na kolejny subkey dla rundy, znowu xorujemy  prawą z kluczem, robimy sboxy, permutacje p, xorujemy z lewą i przechodzimy do następnej rundy)
+         * 13. Tak robimy całe 16 rund
+         * 14. Po 16 rundzie musimy zrobić swap/switch to jest prawa strona ma mieć wartość lewej strony, natomiast lewa strona ma mieć wartość prawej
+         * 16. Po zmienieniu stron miejscami łączymy je do 64 bitów
+         * 17. Wykonujemy na wyniku Inverse Initial Permutation
+         * 18. Wykonaliśmy poprawnie szyfrowanko.
          */
         BitArray inputArray = new BitArray(64);
         BitArray keyArray = new BitArray(64);
