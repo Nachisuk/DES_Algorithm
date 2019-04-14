@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace DES_Algorithm
@@ -30,13 +31,13 @@ namespace DES_Algorithm
                                         41,52,31,37,47,55,30,40,51,45,33,48,
                                         44,49,39,56,34,53,46,42,50,36,29,32 };
 
-        //Expansion Permutation Table  
+        //Expansion Permutation 
         int[] expansionPermutationTable = new int[] { 32,1,2,3,4,5,4,5,6,7,8,9,
                                         8,9,10,11,12,13,12,13,14,15,16,17,
                                         16,17,18,19,20,21,20,21,22,23,24,25,
                                         24,25,26,27,28,29,28,29,30,31,32,1 };
 
-        //S Box Tables ( Actual 2D S Box Tables have been converted to 1D S Box Tables for easier computation )  
+        //S Box
         int[,] sBoxTable = new int[8, 64] { { 14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7,
                                                 0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8,
                                                 4,1,14,8,13,6,2,11,15,12,9,7,3,10,5,0,
@@ -70,11 +71,11 @@ namespace DES_Algorithm
                                                 7,11,4,1,9,12,14,2,0,6,10,13,15,3,5,8,
                                                 2,1,14,7,4,10,8,13,15,12,9,0,3,5,6,11 } };
 
-        //P Box Table  
+        //P Box
         int[] pBoxTable = new int[] { 16,7,20,21,29,12,28,17,1,15,23,26,5,18,31,10,
                                          2,8,24,14,32,27,3,9,19,13,30,6,22,11,4,25 };
 
-        //Final Permutation Table  
+        //Final Permutation  
         int[] InversePermutationTable = new int[] { 40,8,48,16,56,24,64,32,39,7,47,15,55,23,63,31,
                                        38,6,46,14,54,22,62,30,37,5,45,13,53,21,61,29,
                                        36,4,44,12,52,20,60,28,35,3,43,11,51,19,59,27,
@@ -141,6 +142,7 @@ namespace DES_Algorithm
 
         int[,] allRoundsKey = new int[16, 48];
 
+        //przydzielenie textu do szyfrowania i klucza
         public void assignPlainTextAndKey(int[] text, int[] key)
         {
             for(int i=0;i<64;i++)
@@ -150,6 +152,7 @@ namespace DES_Algorithm
             }
         }
 
+        //przydzielenie textu do odszyfrowania i klucza
         public void assignCipherTextAndKey(int[] text, int[] key)
         {
             for (int i = 0; i < 64; i++)
@@ -158,6 +161,7 @@ namespace DES_Algorithm
                 keytext[i] = key[i];
             }
         }
+        //gety
         public int[] getEnrypction()
         {
             return this.finalPermutation;
@@ -188,15 +192,16 @@ namespace DES_Algorithm
         //funkcja startujaca deszyfrowanie
         public void startDecryption()
         {
-            InitialPermutation(ciphertext, afterInitialPermutationDecipher);
-            DivideTextoRLPT(afterInitialPermutationDecipher, plaintextLeftDC, plaintextRightDC);
+            InitialPermutation(ciphertext, afterInitialPermutationDecipher); //pierwsza permutacja zaszyfrowanego textu
+            DivideTextoRLPT(afterInitialPermutationDecipher, plaintextLeftDC, plaintextRightDC); //podzielenie textu na lewą i prawączęść
 
-            StartReverseSixteenRounds();
+            StartReverseSixteenRounds(); // rozpoczęcie 16 rund naszego algorytmu
 
-            JoinRPTandLPT(plaintextLeftDC, plaintextRightDC, afterPboxJoinDC);
-            InversePermutation(afterPboxJoinDC, finalPermutationDC);
+            JoinRPTandLPT(plaintextLeftDC, plaintextRightDC, afterPboxJoinDC); //połączenie lewej i prawej strony zamieniając je
+            InversePermutation(afterPboxJoinDC, finalPermutationDC); // zastosowanie odwróconej permutacji na wyniku
         }
 
+        //funckja odwrotnej permutacji na tablicy IP
         private void InversePermutation(int[] afterPboxJoin, int[] finalPerm)
         {
             int temp;
@@ -207,6 +212,7 @@ namespace DES_Algorithm
             }
         }
 
+        //łączenie lewej i prawej strony i zamiana stronami
         private void JoinRPTandLPT(int[] plaintextLeft, int[] plaintextRight, int[] afterPboxJoin)
         {
             for (int i = 0; i < 32; i++)
@@ -226,28 +232,29 @@ namespace DES_Algorithm
             int val;
             for(int i=0;i<16;i++)
             {
-                SaveRightPlainText(plaintextRight, tempRPT);
+                SaveRightPlainText(plaintextRight, tempRPT); //zapamiętanie prawej części textu do zaszyfrowania
 
-                val = circuralLeftShiftTable[i];
+                val = circuralLeftShiftTable[i]; //ile razy przesuwamy podzielone części klucza w lewo
 
-                DivideKey();
+                DivideKey(); //dzielenie klucza
 
+                //przesuwanie części klucza
                 for(int j=0;j<val;j++)
                 {
                     LeftShift(Ckey);
                     LeftShift(Dkey);
                 }
 
-                CombineDividedKeys();
-                TransformKeyTo48Bit();
+                CombineDividedKeys(); //połaczenie dwóch częśći klucza po podzieleniu
+                TransformKeyTo48Bit(); //stworzenie nowego 48-bitowego klucza;
 
-                expansionPermutation(plaintextRight,rightExpanded48);
-                XOR(keyPermutedChoice48, rightExpanded48, XoredRPT, 48);
-                SboxChange(XoredRPT, plaintextSboxRPT);
-                PboxChange(plaintextSboxRPT, plaintextPboxRPT);
-                XOR(plaintextPboxRPT, plaintextLeft, plaintextRight, 32);
+                expansionPermutation(plaintextRight,rightExpanded48); //rozszerzenie prawej czesci textu szyfrowanego do 48 bitów
+                XOR(keyPermutedChoice48, rightExpanded48, XoredRPT, 48); // XOROwanie prawej czesci textu i przygotowanego 48 klucza (subkeya rundy)
+                SboxChange(XoredRPT, plaintextSboxRPT); //"przepuszczenie" 48-bitowego wyniku przez Sbox, w wyniku tego mamy redukcje do 32-bitów
+                PboxChange(plaintextSboxRPT, plaintextPboxRPT); //permutacja przez Pbox 32-bitów
+                XOR(plaintextPboxRPT, plaintextLeft, plaintextRight, 32); //Xorowanie prawej strony z lewą
 
-                SwapLeftRight(tempRPT, plaintextLeft);
+                SwapLeftRight(tempRPT, plaintextLeft); //lewa strona zapamiętuje poprzednią prawą strone
             }
         }
         //część główna algorytmu odszyfrowania
@@ -280,6 +287,9 @@ namespace DES_Algorithm
             }
         }
         */
+        //funkcja wykonujaca szesnacie rund algorytmu podczas odszyfrowywania, analogicznie do szyfrowania różni się jedynie subkeyami danej rundy
+        //subkeye w szyfrowaniu mamy od 0... 16
+        //podczas odszyfrowywania mamy od 16 do 0
         private void StartReverseSixteenRounds()
         {
             for (int i = 0; i < 16; i++)
@@ -359,6 +369,8 @@ namespace DES_Algorithm
             }
         }
 
+        //przesunięcie klucza w prawo
+        //na razie nie używane
         private void RightShift(int[] halfkey)
         {
             int i, last = halfkey[27];
@@ -369,6 +381,7 @@ namespace DES_Algorithm
             halfkey[i] = last;
         }
 
+        //kopia tablicy
         private void SwapLeftRight(int[] tempRPT, int[] plaintextLeft)
         {
             for(int i=0;i<32;i++)
@@ -377,6 +390,7 @@ namespace DES_Algorithm
             }
         }
 
+        //permutacja przez Pbox
         private void PboxChange(int[] plaintextSboxRPT, int[] plaintextPboxRPT)
         {
             int temp;
@@ -386,38 +400,50 @@ namespace DES_Algorithm
                 plaintextPboxRPT[i] = plaintextSboxRPT[temp - 1];
             }
         }
-
+        //przejscie przez Sbox
         private void SboxChange(int[] xoredRPT, int[] plaintextSboxRPT)
         {
             int j=0, z = 0,r,q=0;
+            //mamy 8 sboxów, każdy przyjmuje po 6bitów i redukuje je do 4 bitów
             for(int i=0;i<48;)
             {
+                //bit pierwszy oraz ostatni dają nam numer wiersza
                 row[0] = xoredRPT[i];
                 row[1] = xoredRPT[i + 5];
                 rowIndex = 2 * row[0] + row[1];
 
+                //pozostałe bity dają nam numer kolumny
                 column[0] = xoredRPT[i+1];
                 column[1] = xoredRPT[i+2];
                 column[2] = xoredRPT[i+3];
                 column[3] = xoredRPT[i+4];
                 columnIndex = 8 * column[0] + 4 * column[1] + 2 * column[2] + column[3];
 
+                //miejsce w tablicy dla row i column
                 int temp = ((16 * rowIndex) + columnIndex);
 
+                //wartość w tablicy sBox pod pozycją odpowiadającą row column
                 sBoxValue = sBoxTable[j++, temp];
 
+                //zamiana naszej wartości z dziesiętnej na string binarny
                 string array = Convert.ToString(sBoxValue, 2).PadLeft(4, '0').ToString();
+                //zapisywanie i zamiana stringu binarnego na wartości int
                 for (int x = 0; x < 4; x++) tempSBox[x] = (int)(array[x] - '0');
-
+                
+                //pozycja od której mamy zapisać kolejne 4 bity wyjściowe
                 r = q * 4;
-
+                //zapisywanie bitów wyjściowych dla konkretnego sboxa
                 AssignSboxBitsToPT(tempSBox, plaintextSboxRPT, r);
-
+                
+                //kolejne 4
                 ++q;
+                //przesuwamy się o 6 bitów
                 i = i + 6;
             }
         }
 
+
+        //zapisywanie wyjściowych 4bitów z sboxów
         private void AssignSboxBitsToPT(int[] tempSBox, int[] plaintextSboxRPT, int arrayStartIndex)
         {
             int temp = arrayStartIndex;
@@ -427,6 +453,7 @@ namespace DES_Algorithm
             }
         }
 
+        //funkcja XORująca tablice
         private void XOR(int[]temp1, int[] temp2, int[] temp3, int tempSize)
         {
             for(int i=0;i<tempSize;i++)
@@ -434,7 +461,7 @@ namespace DES_Algorithm
                 temp3[i] = temp1[i] ^ temp2[i];
             }
         }
-
+        //permutacja expansion prawej części textu
         private void expansionPermutation(int[] plaintextRight, int[] rightExpanded48)
         {
             int temp;
@@ -444,7 +471,8 @@ namespace DES_Algorithm
                 rightExpanded48[i] = tempRPT[temp - 1];
             }
         }
-
+        
+        //permutacja permutedchoice 2, tworzy subkey rundy
         private void TransformKeyTo48Bit()
         {
             int temp;
@@ -459,6 +487,7 @@ namespace DES_Algorithm
             //Console.WriteLine();
         }
 
+        //łączenie kluczy
         private void CombineDividedKeys()
         {
             for (int i = 0; i < 28; i++)
@@ -472,7 +501,7 @@ namespace DES_Algorithm
                 k++;
             }
         }
-
+        //dzielenie kluczy
         private void DivideKey()
         {
             for(int i=0;i<28;i++)
@@ -486,7 +515,7 @@ namespace DES_Algorithm
                 k++;
             }
         }
-
+        //przesunięcie połowy klucza w lewo
         private void LeftShift(int[] halfkey)
         {
             int first = halfkey[0];
@@ -496,7 +525,7 @@ namespace DES_Algorithm
             }
             halfkey[27] = first;
         }
-
+        //tworzenie kopii
         private void SaveRightPlainText(int[] plaintextRight, int[] tempRPT)
         {
             for(int i=0;i<32;i++)
@@ -504,7 +533,7 @@ namespace DES_Algorithm
                 tempRPT[i] = plaintextRight[i];
             }
         }
-
+        //permutacja klucza permutedchoice1
         private void TransformKeyTo56Bit()
         {
             int temp;
@@ -514,7 +543,7 @@ namespace DES_Algorithm
                 keyPermutedChoice56[i] = keytext[temp - 1];
             }
         }
-
+        //podzielenie szyfrowanego textu na część lewą i prawą
         private void DivideTextoRLPT(int[] dividedArray, int[] LPT, int[] RPT)
         {
             for(int i=0;i<32;i++)
@@ -528,7 +557,7 @@ namespace DES_Algorithm
                 k++;
             }
         }
-
+        //początkowa permutacja tablicy textu
         private void InitialPermutation(int[] text, int[] saveArray)
         {
             int temp;
@@ -537,6 +566,129 @@ namespace DES_Algorithm
                 temp = initialPermutationTable[i];
                 saveArray[i] = text[temp - 1];
             }
+        }
+        //testowa funkcja szyfrująca string
+        public string EncryptFromString(string text, string key)
+        {
+            string cipher = "";
+            string binaryText = ToBinaryString(Encoding.ASCII, text);
+            Console.WriteLine(binaryText + " szyfrowany tekst w wersji binarnej");
+            string binaryKey = ToBinaryString(Encoding.ASCII, key);
+
+            
+            if(binaryText.Length % 64 != 0)
+            {
+                int zeroes = (64 - (binaryText.Length % 64));
+
+                for(int i=0;i<zeroes;i++)
+                {
+                    binaryText = binaryText + "0";
+                }
+            }
+            Console.WriteLine(binaryText + " szyfrowany tekst w wersji binarnej po dodaniu zer");
+            if (binaryKey.Length % 64 != 0)
+            {
+                int zeroes = (64 - (binaryKey.Length % 64));
+
+                for (int i = 0; i < zeroes; i++)
+                {
+                    binaryKey = binaryKey + "0";
+                }
+            }
+            for(int i=0;i<64;i++)
+            {
+                keytext[i] = (int)binaryKey[i];
+            }
+            int textLength = binaryText.Length;
+            int keyLength = binaryKey.Length;
+
+            for(int i=0;i<textLength;i += 64)
+            {
+
+                for (int j = i, k = 0; j < (i + 64); j++,k++)
+                {
+                    plaintext[k] = (int)binaryText[j];
+                }
+                startEncryption();
+                for(int j=0;j<64;j++)
+                {
+                    cipher = cipher + (char)finalPermutation[j]; 
+                }
+            }
+            return BinaryStringToString(cipher);
+        }
+        //testowa funkcja odszyfrowująca string
+        public string DecryptFromString(string text, string key)
+        {
+            string decipher = "";
+            string binaryText = ToBinaryString(Encoding.ASCII, text);
+            Console.WriteLine(binaryText + " odszyfrowywany tekst w wersji binarnej");
+            string binaryKey = ToBinaryString(Encoding.ASCII, key);
+
+            Debug.WriteLine(binaryText + " " + binaryKey);
+            if (binaryText.Length % 64 != 0)
+            {
+                int zeroes = (64 - (binaryText.Length % 64));
+
+                for (int i = 0; i < zeroes; i++)
+                {
+                    binaryText = binaryText + "0";
+                }
+            }
+
+            if (binaryKey.Length % 64 != 0)
+            {
+                int zeroes = (64 - (binaryKey.Length % 64));
+
+                for (int i = 0; i < zeroes; i++)
+                {
+                    binaryKey = binaryKey + "0";
+                }
+            }
+            for (int i = 0; i < 64; i++)
+            {
+                keytext[i] = (int)binaryKey[i];
+            }
+
+            Prepare16RoundsKey();
+
+            int textLength = binaryText.Length;
+            int keyLength = binaryKey.Length;
+
+            for (int i = 0; i < textLength; i += 64)
+            {
+
+                for (int j = i, k = 0; j < (i + 64); j++, k++)
+                {
+                    ciphertext[k] = (int)binaryText[j];
+                }
+                startDecryption();
+                for (int j = 0; j < 64; j++)
+                {
+                    decipher = decipher + (char)finalPermutationDC[j];
+                }
+            }
+            return BinaryStringToString(decipher);
+        }
+        //string do binary string
+        public static string ToBinaryString(Encoding encoding, string text)
+        {
+            return string.Join("", encoding.GetBytes(text).Select(n => Convert.ToString(n, 2).PadLeft(8, '0')));
+        }
+        //binary string do stringa
+        //tutaj tworzą się problemy z odszyfrowywaniem stringa
+        public static string BinaryStringToString(string binary)
+        {
+            string result = "";
+            Console.WriteLine(binary + " - nasz string w wersji binarnej");
+            while(binary.Length>0)
+            {
+                var first8 = binary.Substring(0, 8);
+                binary = binary.Substring(8);
+                var number = Convert.ToInt32(first8, 2);
+                result += (char)number;
+            }
+            return result;
         }
     }
 

@@ -26,18 +26,20 @@ namespace DES_Algorithm
 
                // Console.WriteLine("Reee " + text1[i] + " " + key[i]+" "+i);
             }
-                /*
-            DES algotytm = new DES(text1,key1);
-            algotytm.DES_Cipher_Prepare();
+            /*
+        DES algotytm = new DES(text1,key1);
+        algotytm.DES_Cipher_Prepare();
+        Console.WriteLine();
+        Console.WriteLine("Wynik1 ");
+        int[] text2 = algotytm.inputArray;
+        for (int i = 0; i < 64; i++)
+        {
+            Console.Write(text2[i]);
+        }
+        Console.WriteLine();
+        */
+            Console.WriteLine("Szyfrowanie po linii binarnej 64");
             Console.WriteLine();
-            Console.WriteLine("Wynik1 ");
-            int[] text2 = algotytm.inputArray;
-            for (int i = 0; i < 64; i++)
-            {
-                Console.Write(text2[i]);
-            }
-            Console.WriteLine();
-            */
             DES2 algorytm1 = new DES2();
             algorytm1.assignPlainTextAndKey(text1, key1);
             algorytm1.startEncryption();
@@ -62,6 +64,8 @@ namespace DES_Algorithm
             Console.WriteLine();
             
             */
+            Console.WriteLine("Deszyfrowanie po linii binarnej 64");
+            Console.WriteLine();
             Console.WriteLine();
             algorytm1.Prepare16RoundsKey();
             algorytm1.assignCipherTextAndKey(text3, key1);
@@ -73,6 +77,7 @@ namespace DES_Algorithm
                 Console.Write(text4[i]);
             }
             Console.Write(" - odszyfrowanie");
+            Console.WriteLine();
             Console.WriteLine();
             /*
             int[,] subkeys = algorytm1.getAllSubkeys();
@@ -86,6 +91,12 @@ namespace DES_Algorithm
                 Console.WriteLine();
             }
             */
+            Console.WriteLine("Szyfrowanie po string key i string tekst");
+            Console.WriteLine();
+            string n = algorytm1.EncryptFromString("abbadese", "kreda");
+            Console.Write(n +" -wynik szyfrowania stringu");
+            Console.WriteLine();
+            Console.Write(algorytm1.DecryptFromString(n, "kreda")+" - wynik deszyfrowania");
             Console.ReadKey();
         }
     }
