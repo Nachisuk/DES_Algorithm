@@ -190,7 +190,7 @@ namespace DES_Algorithm
         {
             InitialPermutation(ciphertext, afterInitialPermutationDecipher);
             DivideTextoRLPT(afterInitialPermutationDecipher, plaintextLeftDC, plaintextRightDC);
-            TransformKeyTo56Bit();
+
             StartReverseSixteenRounds();
 
             JoinRPTandLPT(plaintextLeftDC, plaintextRightDC, afterPboxJoinDC);
@@ -211,12 +211,12 @@ namespace DES_Algorithm
         {
             for (int i = 0; i < 32; i++)
             {
-                afterPboxJoin[i] = plaintextLeft[i];
+                afterPboxJoin[i] = plaintextRight[i];
             }
             int k = 32;
             for (int i = 0; i < 32; i++)
             {
-                afterPboxJoin[k] =plaintextRight[i];
+                afterPboxJoin[k] =plaintextLeft[i];
                 k++;
             }
         }
@@ -282,12 +282,9 @@ namespace DES_Algorithm
         */
         private void StartReverseSixteenRounds()
         {
-            int val;
             for (int i = 0; i < 16; i++)
             {
-                SaveRightPlainText(plaintextLeftDC, tempLPT);
-                TransformKeyTo48Bit();
-                expansionPermutation(plaintextLeftDC, leftExpanded48DC);
+                SaveRightPlainText(plaintextRightDC, tempRPT);
 
                 int[] key48 = new int[48];
 
@@ -296,13 +293,13 @@ namespace DES_Algorithm
                     key48[j] = allRoundsKey[15 - i, j];
                 }
 
-                XOR(key48, leftExpanded48DC, XoredLPT, 48);
-                SboxChange(XoredLPT, plaintextSboxLPT);
-                PboxChange(plaintextSboxLPT, plaintextPboxLPT);
-                XOR(plaintextPboxLPT, plaintextRightDC, plaintextLeftDC, 32);
+                expansionPermutation(plaintextRightDC, rightExpanded48);
+                XOR(key48, rightExpanded48, XoredRPT, 48);
+                SboxChange(XoredRPT, plaintextSboxRPT);
+                PboxChange(plaintextSboxRPT, plaintextPboxRPT);
+                XOR(plaintextPboxRPT, plaintextLeftDC, plaintextRightDC, 32);
 
-                SwapLeftRight(tempLPT, plaintextRightDC);
-
+                SwapLeftRight(tempRPT, plaintextLeftDC);
             }
         }
     //Przygotowanie wszystkich 16 kluczy
