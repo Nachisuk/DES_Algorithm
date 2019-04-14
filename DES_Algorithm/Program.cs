@@ -7,8 +7,8 @@ namespace DES_Algorithm
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            string text = "1101001100110100010101110111100110011011101111001101110001111111";
-            string key = "1001101100111100010101110111100110011011101111011101111111110001";
+            string text = "1101001100110100010101110111100110011011101111001101110001110111";
+            string key = "1000011100111100010101110111100110011011101111011101111111110001";
 
             Console.WriteLine("Plain text ");
             Console.WriteLine(text);
@@ -48,6 +48,7 @@ namespace DES_Algorithm
             {
                 Console.Write(text3[i]);
             }
+            Console.Write(" - szyfrowanie");
             Console.WriteLine();
             /*
             algorytm1.assignCipherTextAndKey(text3, key1);
@@ -61,6 +62,7 @@ namespace DES_Algorithm
             Console.WriteLine();
             
             */
+            Console.WriteLine();
             algorytm1.Prepare16RoundsKey();
             algorytm1.assignCipherTextAndKey(text3, key1);
             algorytm1.startDecryption();
@@ -70,6 +72,7 @@ namespace DES_Algorithm
             {
                 Console.Write(text4[i]);
             }
+            Console.Write(" - odszyfrowanie");
             Console.WriteLine();
             /*
             int[,] subkeys = algorytm1.getAllSubkeys();
