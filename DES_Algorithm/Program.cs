@@ -69,8 +69,9 @@ namespace DES_Algorithm
             Console.WriteLine();
             Console.WriteLine();
             DES2 algorytm2 = new DES2();
-            algorytm2.Prepare16RoundsKey();
+            
             algorytm2.assignCipherTextAndKey(text3, key1);
+            algorytm2.Prepare16RoundsKey();
             algorytm2.startDecryption();
             int[] text4 = algorytm2.getDecryption();
             Console.WriteLine(text + " -nasz input");
@@ -101,8 +102,8 @@ namespace DES_Algorithm
             Console.Write(algorytm1.DecryptFromString(n, "kreda")+" - wynik deszyfrowania");
 
             Console.WriteLine();
-            //EncryptFromBinFileToBinFile("test.bin", "wynik.bin", key1);
-            
+            EncryptFromBinFileToBinFile("test.bin", "wynik.bin", key1);
+            DecryptFromBinFileToBinFile("wynik.bin", "output.bin", key1);
 
             Console.ReadKey();
         }
@@ -244,7 +245,7 @@ namespace DES_Algorithm
             Console.WriteLine();
             */
 
-            /*
+            
 
             using (BinaryWriter bw = new BinaryWriter(File.Open(outputFileName, FileMode.Create)))
             using (BinaryReader br = new BinaryReader(File.Open(inputFileName, FileMode.Open)))
@@ -272,14 +273,10 @@ namespace DES_Algorithm
                     }
 
                     DES2 algorytmDes = new DES2();
-                    algorytmDes.assignPlainTextAndKey(textToEncrypt, _key);
-                    algorytmDes.startEncryption();
-                    int[] outputEncrypted = algorytmDes.getEnrypction();
-
-                    algorytm1.Prepare16RoundsKey();
-                    algorytm1.assignCipherTextAndKey(text3, key1);
-                    algorytm1.startDecryption();
-                    int[] text4 = algorytm1.getDecryption();
+                    algorytmDes.assignCipherTextAndKey(textToDecrypt, _key);
+                    algorytmDes.Prepare16RoundsKey();
+                    algorytmDes.startDecryption();
+                    int[] outputDecrypted = algorytmDes.getDecryption();
 
                     indxOfInput = 0;
                     for (j = 0; j < 8; j++)
@@ -288,7 +285,7 @@ namespace DES_Algorithm
 
                         for (i = 0; i < 8; i++)
                         {
-                            if (outputEncrypted[indxOfInput] == 1)
+                            if (outputDecrypted[indxOfInput] == 1)
                             {
                                 outByte = (byte)(outByte | (1 << i));
                             }
@@ -301,7 +298,7 @@ namespace DES_Algorithm
 
             }
             Console.WriteLine("Zapisano wyniki w pliku \"{0}\".", outputFileName);
-    */    
+        
     }
 
         //--------------------------------------------------------- DODATKOWA FUNKCJONALNOSC---------------------------------------------------------------------
