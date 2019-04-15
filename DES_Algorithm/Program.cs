@@ -7,171 +7,188 @@ namespace DES_Algorithm
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            string text = "1101001100110100010101110111100110011011101111001101110001110111";
-            string key = "1000011100111100010101110111100110011011101111011101111111110001";
+            MainMenu();
+        }
 
-            Console.WriteLine("Plain text ");
-            Console.WriteLine(text);
-
-            Console.WriteLine("Klucz ");
-            Console.WriteLine(key);
-
-            int[] text1 = new int[64];
-            int[] key1 = new int[64];
-            
-                for(int i=0;i<64;i++)
-            {
-                text1[i] = (int)(text[i] - '0');
-                key1[i] = (int)(key[i] - '0');
-
-               // Console.WriteLine("Reee " + text1[i] + " " + key[i]+" "+i);
-            }
-            /*
-        DES algotytm = new DES(text1,key1);
-        algotytm.DES_Cipher_Prepare();
-        Console.WriteLine();
-        Console.WriteLine("Wynik1 ");
-        int[] text2 = algotytm.inputArray;
-        for (int i = 0; i < 64; i++)
+        public static void MainMenu()
         {
-            Console.Write(text2[i]);
-        }
-        Console.WriteLine();
-        */
-            Console.WriteLine("Szyfrowanie po linii binarnej 64");
-            Console.WriteLine();
-            DES2 algorytm1 = new DES2();
-            algorytm1.assignPlainTextAndKey(text1, key1);
-            algorytm1.startEncryption();
-            int[] text3 = algorytm1.getEnrypction();
-            Console.WriteLine("Wynik2 ");
-            Console.WriteLine(text+" -nasz input");
-            for (int i = 0; i < 64; i++)
+            while (true)
             {
-                Console.Write(text3[i]);
-            }
-            Console.Write(" - szyfrowanie");
-            Console.WriteLine();
-            /*
-            algorytm1.assignCipherTextAndKey(text3, key1);
-            algorytm1.startDecryption();
-            int[] text4 = algorytm1.getDecryption();
-            Console.WriteLine(text + " -nasz input");
-            for (int i = 0; i < 64; i++)
-            {
-                Console.Write(text4[i]);
-            }
-            Console.WriteLine();
-            
-            */
-            Console.WriteLine("Deszyfrowanie po linii binarnej 64");
-            Console.WriteLine();
-            Console.WriteLine();
-            DES2 algorytm2 = new DES2();
-            
-            algorytm2.assignCipherTextAndKey(text3, key1);
-            algorytm2.Prepare16RoundsKey();
-            algorytm2.startDecryption();
-            int[] text4 = algorytm2.getDecryption();
-            Console.WriteLine(text + " -nasz input");
-            for (int i = 0; i < 64; i++)
-            {
-                Console.Write(text4[i]);
-            }
-            Console.Write(" - odszyfrowanie");
-            Console.WriteLine();
-            Console.WriteLine();
-            /*
-            int[,] subkeys = algorytm1.getAllSubkeys();
+                Console.Clear();
+                Console.WriteLine("KRYPTOSYSTEMY SYMETRYCZNE - ALGORYTM DES");
+                Console.WriteLine("1. Zakoduj plik binarny");
+                Console.WriteLine("2. Rozkoduj plik binarny");
+                Console.WriteLine("3. Obsługa plików");
+                String c = Console.ReadLine();
 
-            for(int i=0;i<16;i++)
-            {
-                for(int j=0;j<48;j++)
+                switch (c)
                 {
-                    Console.Write(subkeys[i, j]);
+                    case "1":
+                        EncryptMenu();
+                        break;
+                    case "2":
+                        DecryptMenu();
+                        break;
+                    case "3":
+                        ObslugaPlikow();
+                        break;
                 }
-                Console.WriteLine();
+
             }
-            */
-            Console.WriteLine("Szyfrowanie po string key i string tekst");
-            Console.WriteLine();
-            string n = algorytm1.EncryptFromString("abbadese", "kreda");
-            Console.Write(n +" -wynik szyfrowania stringu");
-            Console.WriteLine();
-            Console.Write(algorytm1.DecryptFromString(n, "kreda")+" - wynik deszyfrowania");
-
-            Console.WriteLine();
-            EncryptFromBinFileToBinFile("test.bin", "wynik.bin", key1);
-            DecryptFromBinFileToBinFile("wynik.bin", "output.bin", key1);
-
-            Console.ReadKey();
         }
 
+        public static void EncryptMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Zakoduj:");
+                Console.WriteLine("1. Z wlasnym kluczem");
+                Console.WriteLine("2. Z losowym kluczem");
+                Console.WriteLine("3. Powrót");
+                String c = Console.ReadLine();
 
+                switch (c)
+                {
+                    case "1":
+                        Console.Clear();
+                        Console.WriteLine("Podaj 64-bitowy klucz (ciąg 0/1):");
+                        string textKey = Console.ReadLine();
 
+                        if(textKey.Length!=64)
+                        {
+                            Console.WriteLine("Twoj klucz nie ma 64 bitów! ");
+                            Console.ReadKey();
+                            break;
+                        }
+
+                        int[] key = new int[64];
+                        for (int i = 0; i < 64; i++)
+                        {
+                            key[i] = (int)(textKey[i] - '0');
+                        }
+
+                        Console.WriteLine("Podaj nazwę pliku do zakodowania (wejściowego):");
+                        string input = Console.ReadLine();
+
+                        Console.WriteLine("Podaj nazwę pliku - wyjściowego:");
+                        string output = Console.ReadLine();
+
+                        EncryptFromBinFileToBinFile(input, output, key);
+
+                        Console.WriteLine("Naciśnij klawisz aby kontynuować...");
+                        Console.ReadKey();
+                        break;
+
+                    case "2":
+                        Console.Clear();
+                        Console.WriteLine("Twój klucz to:");
+                        string textKey2="";
+                        int[] key2;
+                        DES2 algorytm = new DES2();
+                        algorytm.generateAndAssignRandomKey();
+                        key2 = algorytm.getKey();
+                        for (int i = 0; i < 64; i++)
+                        {
+                            textKey2 = textKey2 + key2[i];
+                        }
+                        Console.WriteLine(textKey2);
+
+                        Console.WriteLine("Podaj nazwę pliku do zakodowania (wejściowego):");
+                        string input2 = Console.ReadLine();
+
+                        Console.WriteLine("Podaj nazwę pliku - wyjściowego:");
+                        string output2 = Console.ReadLine();
+
+                        EncryptFromBinFileToBinFile(input2, output2, key2);
+
+                        Console.WriteLine("Naciśnij klawisz aby kontynuować...");
+                        Console.ReadKey();
+                        break;
+                    case "3":
+                        return;
+                }
+
+            }
+        }
+
+        public static void DecryptMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Rozkoduj:");
+                Console.WriteLine("1. Z wlasnym kluczem");
+                Console.WriteLine("2. Z losowym kluczem");
+                Console.WriteLine("3. Powrót");
+                String c = Console.ReadLine();
+
+                switch (c)
+                {
+                    case "1":
+                        Console.Clear();
+                        Console.WriteLine("Podaj 64-bitowy klucz (ciąg 0/1):");
+                        string textKey = Console.ReadLine();
+
+                        if (textKey.Length != 64)
+                        {
+                            Console.WriteLine("Twoj klucz nie ma 64 bitów! ");
+                            Console.ReadKey();
+                            break;
+                        }
+
+                        int[] key = new int[64];
+                        for (int i = 0; i < 64; i++)
+                        {
+                            key[i] = (int)(textKey[i] - '0');
+                        }
+
+                        Console.WriteLine("Podaj nazwę pliku do rozkodowania (wejściowego):");
+                        string input = Console.ReadLine();
+
+                        Console.WriteLine("Podaj nazwę pliku - wyjściowego:");
+                        string output = Console.ReadLine();
+
+                        DecryptFromBinFileToBinFile(input, output, key);
+
+                        Console.WriteLine("Naciśnij klawisz aby kontynuować...");
+                        Console.ReadKey();
+                        break;
+
+                    case "2":
+                        Console.Clear();
+                        Console.WriteLine("Twój klucz to:");
+                        string textKey2 = "";
+                        int[] key2;
+                        DES2 algorytm = new DES2();
+                        algorytm.generateAndAssignRandomKey();
+                        key2 = algorytm.getKey();
+                        for (int i = 0; i < 64; i++)
+                        {
+                            textKey2 = textKey2 + key2[i];
+                        }
+                        Console.WriteLine(textKey2);
+
+                        Console.WriteLine("Podaj nazwę pliku do rozkodowania (wejściowego):");
+                        string input2 = Console.ReadLine();
+
+                        Console.WriteLine("Podaj nazwę pliku - wyjściowego:");
+                        string output2 = Console.ReadLine();
+
+                        DecryptFromBinFileToBinFile(input2, output2, key2);
+
+                        Console.WriteLine("Naciśnij klawisz aby kontynuować...");
+                        Console.ReadKey();
+                        break;
+                    case "3":
+                        return;
+                }
+
+            }
+        }
 
         public static void EncryptFromBinFileToBinFile(string inputFileName, string outputFileName, int[] _key)
         {
-            /*
-            Console.WriteLine("Szyfrowanie po linii binarnej 64");
-            Console.WriteLine();
-            DES2 algorytm1 = new DES2();
-            algorytm1.assignPlainTextAndKey(text1, key1);
-            algorytm1.startEncryption();
-            int[] text3 = algorytm1.getEnrypction();
-            Console.WriteLine("Wynik2 ");
-            Console.WriteLine(text+" -nasz input");
-            for (int i = 0; i < 64; i++)
-            {
-                Console.Write(text3[i]);
-            }
-            Console.Write(" - szyfrowanie");
-            Console.WriteLine();
-             */
-
-            /*
-            using (BinaryWriter bw = new BinaryWriter(File.Open(outputFileName, FileMode.Create)))
-            using (BinaryReader br = new BinaryReader(File.Open(inputFileName, FileMode.Open)))
-            {
-                int pos = 0;
-                int length = (int)br.BaseStream.Length;
-
-
-                while (pos < length)
-                {
-                    byte v = br.ReadByte();
-
-                    byte outByte = 0;
-                    for (i = 0; i < 8; i++)
-                    {
-                        int valueOfBit = ((v & (1 << i)) == 0) ? 0 : 1;
-
-                        tmp = 0;
-                        foreach (int indx in indexesToXOR)
-                        {
-                            tmp ^= actualMemo[indx];
-                        }
-
-                        tmp ^= valueOfBit;
-
-                        if (tmp == 1)
-                        {
-                            outByte = (byte)(outByte | (1 << i));
-                        }
-
-                        Array.Copy(actualMemo, 0, actualMemo, 1, actualMemo.Length - 1);
-                        actualMemo[0] = tmp;
-                    }
-                    bw.Write(outByte);
-
-                    pos += sizeof(byte);
-                }
-            }
-
-            Console.WriteLine("Zapisano wyniki w pliku \"{0}\".", outputFileName);
-            */
-
             using (BinaryWriter bw = new BinaryWriter(File.Open(outputFileName, FileMode.Create)))
             using (BinaryReader br = new BinaryReader(File.Open(inputFileName, FileMode.Open)))
             {
@@ -179,22 +196,42 @@ namespace DES_Algorithm
                 int length = (int)br.BaseStream.Length;
                 int[] textToEncrypt = new int[64];
                 byte v;
+                bool areFullBlocks = true;
 
                 while (pos < length)
                 {
                     int indxOfInput = 0;
                     for (j=0; j < 8; j++) //8 bajtów bo 8 bajtów po 8 bitów to 8*8=64 bity
                     {
-                        v = br.ReadByte();
-
-                        for (i = 0; i < 8; i++)
+                        if (pos < length) 
                         {
-                            int valueOfBit = ((v & (1 << i)) == 0) ? 0 : 1;
+                            v = br.ReadByte();
 
-                            textToEncrypt[indxOfInput] = valueOfBit;
-                            indxOfInput++;
+                            for (i = 0; i < 8; i++)
+                            {
+                                int valueOfBit = ((v & (1 << i)) == 0) ? 0 : 1;
+
+                                textToEncrypt[indxOfInput] = valueOfBit;
+                                indxOfInput++;
+                            }
+                        }
+                        else //w przypadku gdy skoczyl sie plik ale mamy zaczety blok - dopelnij blok zerami
+                        {
+                            areFullBlocks = false;
+                            for (i = 0; i < 8; i++)
+                            {
+                                int valueOfBit = 0;
+
+                                textToEncrypt[indxOfInput] = valueOfBit;
+                                indxOfInput++;
+                            }
                         }
                         pos += sizeof(byte);
+                    }
+
+                    if(!areFullBlocks)
+                    {
+                        Console.WriteLine("Twój plik wejściowy nie miał pełnych 64-bitowych bloków - dopełniono go zerami");
                     }
 
                     DES2 algorytmDes = new DES2();
@@ -227,26 +264,6 @@ namespace DES_Algorithm
 
         public static void DecryptFromBinFileToBinFile(string inputFileName, string outputFileName, int[] _key)
         {
-            /*
-            Console.WriteLine("Deszyfrowanie po linii binarnej 64");
-            Console.WriteLine();
-            Console.WriteLine();
-            algorytm1.Prepare16RoundsKey();
-            algorytm1.assignCipherTextAndKey(text3, key1);
-            algorytm1.startDecryption();
-            int[] text4 = algorytm1.getDecryption();
-            Console.WriteLine(text + " -nasz input");
-            for (int i = 0; i < 64; i++)
-            {
-                Console.Write(text4[i]);
-            }
-            Console.Write(" - odszyfrowanie");
-            Console.WriteLine();
-            Console.WriteLine();
-            */
-
-            
-
             using (BinaryWriter bw = new BinaryWriter(File.Open(outputFileName, FileMode.Create)))
             using (BinaryReader br = new BinaryReader(File.Open(inputFileName, FileMode.Open)))
             {
@@ -272,9 +289,9 @@ namespace DES_Algorithm
                         pos += sizeof(byte);
                     }
 
+
                     DES2 algorytmDes = new DES2();
                     algorytmDes.assignCipherTextAndKey(textToDecrypt, _key);
-                    algorytmDes.Prepare16RoundsKey();
                     algorytmDes.startDecryption();
                     int[] outputDecrypted = algorytmDes.getDecryption();
 
@@ -299,7 +316,7 @@ namespace DES_Algorithm
             }
             Console.WriteLine("Zapisano wyniki w pliku \"{0}\".", outputFileName);
         
-    }
+        }
 
         //--------------------------------------------------------- DODATKOWA FUNKCJONALNOSC---------------------------------------------------------------------
 

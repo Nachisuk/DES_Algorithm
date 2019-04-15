@@ -145,7 +145,7 @@ namespace DES_Algorithm
         //przydzielenie textu do szyfrowania i klucza
         public void assignPlainTextAndKey(int[] text, int[] key)
         {
-            for(int i=0;i<64;i++)
+            for (int i = 0; i < 64; i++)
             {
                 plaintext[i] = text[i];
                 keytext[i] = key[i];
@@ -161,6 +161,25 @@ namespace DES_Algorithm
                 keytext[i] = key[i];
             }
         }
+
+        //przydzielenie textu do szyfrowania
+        public void assignPlainText(int[] text)
+        {
+            for (int i = 0; i < 64; i++)
+            {
+                plaintext[i] = text[i];
+            }
+        }
+
+        //przydzielenie textu do odszyfrowania
+        public void assignCipherText(int[] text)
+        {
+            for (int i = 0; i < 64; i++)
+            {
+                ciphertext[i] = text[i];
+            }
+        }
+
         //gety
         public int[] getEnrypction()
         {
@@ -175,6 +194,26 @@ namespace DES_Algorithm
         public int[,] getAllSubkeys()
         {
             return this.allRoundsKey;
+        }
+
+        public int[] getKey()
+        {
+            return this.keytext;
+        }
+
+        public void setKey(int[] _key)
+        {
+            this.keytext = _key;
+        }
+
+        //funkcja losująca klucz
+        public void generateAndAssignRandomKey()
+        {
+            Random random = new Random();
+            for (int i = 0; i < 64; i++)
+            {
+                keytext[i] = random.Next(0,2);
+            }
         }
 
         //funkcja startująca szyfrowanie
@@ -192,6 +231,7 @@ namespace DES_Algorithm
         //funkcja startujaca deszyfrowanie
         public void startDecryption()
         {
+            Prepare16RoundsKey();
             InitialPermutation(ciphertext, afterInitialPermutationDecipher); //pierwsza permutacja zaszyfrowanego textu
             DivideTextoRLPT(afterInitialPermutationDecipher, plaintextLeftDC, plaintextRightDC); //podzielenie textu na lewą i prawączęść
 
@@ -566,129 +606,6 @@ namespace DES_Algorithm
                 temp = initialPermutationTable[i];
                 saveArray[i] = text[temp - 1];
             }
-        }
-        //testowa funkcja szyfrująca string
-        public string EncryptFromString(string text, string key)
-        {
-            string cipher = "";
-            string binaryText = ToBinaryString(Encoding.ASCII, text);
-            Console.WriteLine(binaryText + " szyfrowany tekst w wersji binarnej");
-            string binaryKey = ToBinaryString(Encoding.ASCII, key);
-
-            
-            if(binaryText.Length % 64 != 0)
-            {
-                int zeroes = (64 - (binaryText.Length % 64));
-
-                for(int i=0;i<zeroes;i++)
-                {
-                    binaryText = binaryText + "0";
-                }
-            }
-            Console.WriteLine(binaryText + " szyfrowany tekst w wersji binarnej po dodaniu zer");
-            if (binaryKey.Length % 64 != 0)
-            {
-                int zeroes = (64 - (binaryKey.Length % 64));
-
-                for (int i = 0; i < zeroes; i++)
-                {
-                    binaryKey = binaryKey + "0";
-                }
-            }
-            for(int i=0;i<64;i++)
-            {
-                keytext[i] = (int)binaryKey[i];
-            }
-            int textLength = binaryText.Length;
-            int keyLength = binaryKey.Length;
-
-            for(int i=0;i<textLength;i += 64)
-            {
-
-                for (int j = i, k = 0; j < (i + 64); j++,k++)
-                {
-                    plaintext[k] = (int)binaryText[j];
-                }
-                startEncryption();
-                for(int j=0;j<64;j++)
-                {
-                    cipher = cipher + (char)finalPermutation[j]; 
-                }
-            }
-            return BinaryStringToString(cipher);
-        }
-        //testowa funkcja odszyfrowująca string
-        public string DecryptFromString(string text, string key)
-        {
-            string decipher = "";
-            string binaryText = ToBinaryString(Encoding.ASCII, text);
-            Console.WriteLine(binaryText + " odszyfrowywany tekst w wersji binarnej");
-            string binaryKey = ToBinaryString(Encoding.ASCII, key);
-
-            Debug.WriteLine(binaryText + " " + binaryKey);
-            if (binaryText.Length % 64 != 0)
-            {
-                int zeroes = (64 - (binaryText.Length % 64));
-
-                for (int i = 0; i < zeroes; i++)
-                {
-                    binaryText = binaryText + "0";
-                }
-            }
-
-            if (binaryKey.Length % 64 != 0)
-            {
-                int zeroes = (64 - (binaryKey.Length % 64));
-
-                for (int i = 0; i < zeroes; i++)
-                {
-                    binaryKey = binaryKey + "0";
-                }
-            }
-            for (int i = 0; i < 64; i++)
-            {
-                keytext[i] = (int)binaryKey[i];
-            }
-
-            Prepare16RoundsKey();
-
-            int textLength = binaryText.Length;
-            int keyLength = binaryKey.Length;
-
-            for (int i = 0; i < textLength; i += 64)
-            {
-
-                for (int j = i, k = 0; j < (i + 64); j++, k++)
-                {
-                    ciphertext[k] = (int)binaryText[j];
-                }
-                startDecryption();
-                for (int j = 0; j < 64; j++)
-                {
-                    decipher = decipher + (char)finalPermutationDC[j];
-                }
-            }
-            return BinaryStringToString(decipher);
-        }
-        //string do binary string
-        public static string ToBinaryString(Encoding encoding, string text)
-        {
-            return string.Join("", encoding.GetBytes(text).Select(n => Convert.ToString(n, 2).PadLeft(8, '0')));
-        }
-        //binary string do stringa
-        //tutaj tworzą się problemy z odszyfrowywaniem stringa
-        public static string BinaryStringToString(string binary)
-        {
-            string result = "";
-            Console.WriteLine(binary + " - nasz string w wersji binarnej");
-            while(binary.Length>0)
-            {
-                var first8 = binary.Substring(0, 8);
-                binary = binary.Substring(8);
-                var number = Convert.ToInt32(first8, 2);
-                result += (char)number;
-            }
-            return result;
         }
     }
 
