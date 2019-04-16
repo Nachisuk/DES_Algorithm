@@ -607,7 +607,9 @@ namespace DES_Algorithm
                 saveArray[i] = text[temp - 1];
             }
         }
-    }
 
-   
+        
+        
+
+    }
 }
