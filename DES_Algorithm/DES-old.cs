@@ -7,9 +7,9 @@ namespace DES_Algorithm
 {
     class DES
     {
-        //Kącik teoretyczny aby wszystko było łatwiejsze do przemyślenia
+
         /*
-         *Ogólnie możemy podzielić to na dwie części zaczniemy od kluacza
+         *Ogólnie możemy podzielić to na dwie części zaczniemy od klucza
          * Kroki działania dla klucza:
          * 1. Mamy klucz
          * 2. Wykonujemy Permuted Choice 1
@@ -59,7 +59,7 @@ namespace DES_Algorithm
          * 14. Po 16 rundzie musimy zrobić swap/switch to jest prawa strona ma mieć wartość lewej strony, natomiast lewa strona ma mieć wartość prawej
          * 16. Po zmienieniu stron miejscami łączymy je do 64 bitów
          * 17. Wykonujemy na wyniku Inverse Initial Permutation
-         * 18. Wykonaliśmy poprawnie szyfrowanko.
+         * 18. Wykonaliśmy poprawnie szyfrowanie.
          * 
          */
 
